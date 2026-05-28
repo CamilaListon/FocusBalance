@@ -6,7 +6,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/authRoutes');
 const registroRoutes = require('./routes/registroRoutes');
 const metaRoutes = require('./routes/metaRoutes');
-// const dashboardRoutes = require('./routes/dashboardRoutes'); // Faremos em seguida!
+const dashboardRoutes = require('./routes/dashboardRoutes'); // Faremos em seguida!
 
 const app = express();
 
@@ -18,7 +18,7 @@ app.use(express.json()); // Permite receber dados no formato JSON
 app.use('/api/auth', authRoutes);
 app.use('/api/registros', registroRoutes);
 app.use('/api/metas', metaRoutes);
-// app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Rota de teste (Health Check) para ver se a API está no ar
 app.get('/', (req, res) => {

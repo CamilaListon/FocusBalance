@@ -1,54 +1,35 @@
 const db = require('../config/db');
 
-// 1. CREATE: Criar um novo registro diário
 exports.criar = async (req, res) => {
-    // Pegamos uma conexão dedicada para usar Transação (garante que tudo salva ou nada salva)
-    const conexao = await db.getConnection();
-    
     try {
-        const { data_registro, tempo_total_minutos, nivel_produtividade, observacoes, aplicativos } = req.body;
-        const usuarioId = req.usuario.id; // Vem do authMiddleware!
+        const usuario_id = req.usuario.id;
+        const { nome_app, tempo_minutos } = req.body;
+        
+        // Data atual
+        const data_registro = new Date().toISOString().split('T')[0];
+        
+        // Formata a observação
+        const observacoes = `[${nome_app}: ${tempo_minutos}m]`;
+        const nivel_produtividade = 3; 
 
-        await conexao.beginTransaction();
+        // O SEGREDO ESTÁ AQUI: Se o dia já existir, ele soma o tempo e concatena os apps!
+        const query = `
+            INSERT INTO registros (usuario_id, data_registro, tempo_total_minutos, nivel_produtividade, observacoes) 
+            VALUES (?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE 
+                tempo_total_minutos = tempo_total_minutos + VALUES(tempo_total_minutos),
+                observacoes = CONCAT(observacoes, ' + ', VALUES(observacoes))
+        `;
+        
+        const valores = [usuario_id, data_registro, tempo_minutos, nivel_produtividade, observacoes];
 
-        // 1. Salva o registro principal
-        const [resultadoRegistro] = await conexao.query(
-            `INSERT INTO registros (usuario_id, data_registro, tempo_total_minutos, nivel_produtividade, observacoes) 
-             VALUES (?, ?, ?, ?, ?)`,
-            [usuarioId, data_registro, tempo_total_minutos, nivel_produtividade, observacoes]
-        );
+        const [resultado] = await db.execute(query, valores);
 
-        const registroId = resultadoRegistro.insertId;
-
-        // 2. Se o usuário enviou a lista de apps, salvamos eles vinculados a este registro
-        if (aplicativos && aplicativos.length > 0) {
-            const valoresApps = aplicativos.map(app => [
-                registroId, 
-                app.nome_app, 
-                app.tempo_uso_minutos
-            ]);
-            
-            // Inserção em massa (muito mais rápido e profissional)
-            await conexao.query(
-                `INSERT INTO aplicativos (registro_id, nome_app, tempo_uso_minutos) VALUES ?`,
-                [valoresApps]
-            );
-        }
-
-        await conexao.commit();
-        res.status(201).json({ mensagem: 'Registro salvo com sucesso!', id: registroId });
+        res.status(201).json({ mensagem: 'Tempo registrado com sucesso!', id: resultado.insertId });
 
     } catch (erro) {
-        await conexao.rollback(); // Se der erro, desfaz tudo para não sujar o banco
-        console.error(erro);
-        
-        // Verifica se o erro é a trava de 1 registro por dia (UNIQUE KEY do MySQL)
-        if (erro.code === 'ER_DUP_ENTRY') {
-            return res.status(400).json({ erro: 'Você já tem um registro para esta data. Edite-o em vez de criar outro.' });
-        }
-        res.status(500).json({ erro: 'Erro ao salvar o registro.' });
-    } finally {
-        conexao.release(); // Libera a conexão de volta pro banco
+        console.error('Erro ao criar registro:', erro);
+        res.status(500).json({ erro: 'Erro interno ao salvar no banco de dados.' });
     }
 };
 
