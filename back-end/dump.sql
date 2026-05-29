@@ -85,3 +85,8 @@ LIMIT 1
 FROM usuarios u
 LEFT JOIN registros r ON u.id = r.usuario_id
 GROUP BY u.id, u.nome, u.tipo_plano, u.streak_atual;
+
+ALTER TABLE usuarios MODIFY COLUMN foto_url LONGTEXT;
+DESCRIBE usuarios;
+
+SELECT * FROM registros;
