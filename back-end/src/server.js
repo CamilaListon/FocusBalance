@@ -12,13 +12,15 @@ const app = express();
 
 // Middlewares globais
 app.use(cors());
-app.use(express.json()); // Permite receber dados no formato JSON
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Definição dos caminhos base (Endpoints)
 app.use('/api/auth', authRoutes);
 app.use('/api/registros', registroRoutes);
 app.use('/api/metas', metaRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/perfil', require('./routes/perfilRoutes'));
 
 // Rota de teste (Health Check) para ver se a API está no ar
 app.get('/', (req, res) => {

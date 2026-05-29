@@ -12,10 +12,7 @@ router.post('/', registroController.criar);
 // Endpoint: GET /api/registros
 router.get('/', registroController.listar);
 
-// Endpoint: PUT /api/registros/:id
-router.put('/:id', registroController.atualizar);
-
-// Endpoint: DELETE /api/registros/:id
-router.delete('/:id', registroController.excluir);
+// Rota para editar ou excluir um app específico dentro de um dia
+router.put('/app', authMiddleware, registroController.editarOuExcluirApp);
 
 module.exports = router;

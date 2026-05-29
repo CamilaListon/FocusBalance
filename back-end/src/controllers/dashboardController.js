@@ -5,7 +5,7 @@ exports.obterResumo = async (req, res) => {
         const usuario_id = req.usuario.id;
 
         const [registros] = await db.execute(
-            'SELECT data_registro, tempo_total_minutos, observacoes FROM registros WHERE usuario_id = ? ORDER BY data_registro DESC',
+            'SELECT id, data_registro, tempo_total_minutos, observacoes FROM registros WHERE usuario_id = ? ORDER BY data_registro DESC',
             [usuario_id]
         );
 

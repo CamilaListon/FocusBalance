@@ -102,3 +102,72 @@ exports.excluir = async (req, res) => {
         res.status(500).json({ erro: 'Erro ao excluir registro.' });
     }
 };
+
+exports.editarOuExcluirApp = async (req, res) => {
+    try {
+        const usuario_id = req.usuario.id;
+        const { registro_id, nome_app, novo_tempo, acao } = req.body;
+
+        // Busca o registro diretamente pelo ID único
+        const [rows] = await db.execute(
+            'SELECT id, observacoes FROM registros WHERE id = ? AND usuario_id = ?',
+            [registro_id, usuario_id]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ erro: 'Registro não encontrado no banco de dados.' });
+        }
+
+        const registroId = rows[0].id;
+        let observacaoAtual = rows[0].observacoes || '';
+        let apps = [];
+
+        if (observacaoAtual.includes('[')) {
+            const parts = observacaoAtual.split(' + ');
+            parts.forEach(p => {
+                const clean = p.replace(/\[|\]/g, '');
+                const [nome, tempoStr] = clean.split(':');
+                if (nome && tempoStr) {
+                    apps.push({ 
+                        nome: nome.trim(), 
+                        tempo: parseInt(tempoStr.replace('m','').trim(), 10) 
+                    });
+                }
+            });
+        }
+
+        // Remove o aplicativo modificado
+        apps = apps.filter(a => a.nome.toLowerCase() !== nome_app.toLowerCase());
+
+        // Se for edição, adiciona ele de volta com o novo tempo
+        if (acao === 'editar' && novo_tempo > 0) {
+            const nomeFormatado = nome_app.charAt(0).toUpperCase() + nome_app.slice(1).toLowerCase();
+            apps.push({ nome: nomeFormatado, tempo: novo_tempo });
+        }
+
+        // Se não sobrar mais nenhum app, deleta o registro inteiro daquele dia
+        if (apps.length === 0) {
+            await db.execute('DELETE FROM registros WHERE id = ?', [registroId]);
+            return res.status(200).json({ mensagem: 'Último app removido, registro apagado.' });
+        }
+
+        // Se ainda tem apps, recalcula e atualiza
+        let novoTempoTotal = 0;
+        let novaObservacao = apps.map(a => {
+            novoTempoTotal += a.tempo;
+            return `[${a.nome}: ${a.tempo}m]`;
+        }).join(' + ');
+
+        await db.execute(
+            'UPDATE registros SET observacoes = ?, tempo_total_minutos = ? WHERE id = ?',
+            [novaObservacao, novoTempoTotal, registroId]
+        );
+
+        res.status(200).json({ mensagem: 'App atualizado com sucesso!' });
+
+    } catch (erro) {
+        // Se der erro, ele vai imprimir AQUI no terminal do seu VS Code
+        console.error('Erro exato no Back-end:', erro);
+        res.status(500).json({ erro: 'Erro interno ao atualizar.' });
+    }
+};
