@@ -1,0 +1,139 @@
+.form-register-card {
+  background-color: var(--white);
+  padding: 25px;
+  border-radius: 16px;
+  border: 1px solid rgba(45, 106, 79, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+}
+
+.form-register-card h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: var(--primary-green);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.form-feedback {
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.form-feedback.sucesso {
+  background-color: var(--success-bg);
+  color: var(--success-text);
+  border-left: 4px solid var(--medium-green);
+}
+
+.form-feedback.erro {
+  background-color: var(--error-bg);
+  color: var(--error-text);
+  border-left: 4px solid var(--error-text);
+}
+
+.inline-form {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.input-group-app {
+  flex: 2;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group-time {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+}
+
+.inline-form label {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.register-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  box-sizing: border-box;
+  font-size: 15px;
+  color: var(--text-dark);
+  background-color: var(--bg-calm);
+  transition: var(--transition);
+}
+
+.register-input:focus {
+  outline: none;
+  border-color: var(--medium-green);
+  background-color: var(--white);
+  box-shadow: 0 0 0 4px rgba(64, 145, 108, 0.15);
+}
+
+.btn-add-register {
+  padding: 12px 24px;
+  background-color: var(--medium-green);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  height: 46px;
+  transition: var(--transition);
+  box-shadow: 0 4px 10px rgba(64, 145, 108, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-add-register:hover:not(:disabled) {
+  background-color: var(--primary-green);
+  transform: translateY(-1px);
+}
+
+.btn-add-register:disabled {
+  background-color: var(--border-color);
+  color: #888;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* TABLETS (Até 768px) */
+@media (max-width: 768px) {
+  .input-group-app {
+    flex: 1 1 100%; 
+  }
+}
+
+/* CELULARES (Até 480px) */
+@media (max-width: 480px) {
+  .form-register-card {
+    padding: 20px 15px;
+  }
+
+  .inline-form {
+    gap: 15px;
+  }
+
+  .input-group-app, 
+  .input-group-time {
+    flex: 1 1 100%;
+  }
+
+  .btn-add-register {
+    width: 100%;
+    margin-top: 5px;
+  }
+}

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import FormRegister from './Form-register';
+import './../styles/dashboard.css'; 
 
 const Dashboard = () => {
   const [dados, setDados] = useState(null);
@@ -50,7 +51,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem('@FocusBalance:token');
       await axios.put('http://localhost:3000/api/registros/app', {
-        registro_id: registroId, // <-- Agora mandamos o ID!
+        registro_id: registroId,
         nome_app: nomeApp,
         novo_tempo: novoTempo,
         acao: acao
@@ -102,18 +103,20 @@ const Dashboard = () => {
       });
 
       return Object.entries(somaApps).map(([nome, tempo], index) => (
-        <div key={index} style={{ marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{ minWidth: '150px' }}>• {nome}: {tempo} minutos</span>
-          <button
-            onClick={() => handleEditarApp(registroId, nome, tempo)}
-            style={{ cursor: 'pointer', border: 'none', background: 'transparent', fontSize: '16px' }}
-            title="Editar tempo"
-          >✏️</button>
-          <button
-            onClick={() => handleExcluirApp(registroId, nome)}
-            style={{ cursor: 'pointer', border: 'none', background: 'transparent', fontSize: '16px' }}
-            title="Excluir app"
-          >🗑️</button>
+        <div key={index} className="app-detail-item">
+          <span className="app-detail-text">• {nome}: {tempo} minutos</span>
+          <div>
+            <button
+              onClick={() => handleEditarApp(registroId, nome, tempo)}
+              className="btn-inline-action"
+              title="Editar tempo"
+            >✏️</button>
+            <button
+              onClick={() => handleExcluirApp(registroId, nome)}
+              className="btn-inline-action"
+              title="Excluir app"
+            >🗑️</button>
+          </div>
         </div>
       ));
     }
@@ -121,69 +124,62 @@ const Dashboard = () => {
     return observacao;
   };
 
-  if (loading) return <div style={{ textAlign: 'center', marginTop: '50px' }}>Carregando seu painel...</div>;
-  if (erro) return <div style={{ color: 'red', textAlign: 'center', marginTop: '50px' }}>{erro}</div>;
+  if (loading) return <div className="dash-loading">Carregando seu painel...</div>;
+  if (erro) return <div className="dash-error">{erro}</div>;
 
   const usuarioStorage = JSON.parse(localStorage.getItem('@FocusBalance:usuario') || '{}');
   const nomeExibicao = usuarioStorage.nome || dados?.usuario_nome || 'Visitante';
 
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px', fontFamily: 'sans-serif' }}>
+    <div className="dash-container">
 
       {/* Cabeçalho */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', paddingBottom: '10px', borderBottom: '1px solid #ccc' }}>
+      <header className="dash-header">
         <h2>Olá, {nomeExibicao}! 👋</h2>
-        {/* Substitua o botão de sair atual por estes dois botões lado a lado */}
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button
-            onClick={() => navigate('/perfil')}
-            style={{ padding: '8px 15px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-          >
+        <div className="header-actions">
+          <button onClick={() => navigate('/perfil')} className="btn-profile">
             ⚙️ Meu Perfil
           </button>
-          <button
-            onClick={handleLogout}
-            style={{ padding: '8px 15px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-          >
+          <button onClick={handleLogout} className="btn-logout">
             Sair
           </button>
         </div>
-      </div>
+      </header>
 
       {/* Cartões de Estatísticas */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '40px' }}>
-        <div style={{ padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', textAlign: 'center' }}>
-          <h4 style={{ margin: '0 0 10px 0', color: '#666' }}>🔥 Streak Atual</h4>
-          <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#ff8c00', margin: 0 }}>{dados?.streak_atual} dias</p>
+      <section className="cards-grid">
+        <div className="stat-card">
+          <h4>🔥 Streak Atual</h4>
+          <p className="stat-value streak">{dados?.streak_atual} dias</p>
         </div>
-        <div style={{ padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', textAlign: 'center' }}>
-          <h4 style={{ margin: '0 0 10px 0', color: '#666' }}>⏱️ Média Diária</h4>
-          <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#007BFF', margin: 0 }}>{dados?.media_diaria_minutos} min</p>
+        <div className="stat-card">
+          <h4>⏱️ Média Diária</h4>
+          <p className="stat-value media">{dados?.media_diaria_minutos} min</p>
         </div>
-        <div style={{ padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', textAlign: 'center' }}>
-          <h4 style={{ margin: '0 0 10px 0', color: '#666' }}>📱 App Mais Usado</h4>
-          <p style={{ fontSize: '20px', fontWeight: 'bold', color: '#28a745', margin: 0 }}>{dados?.app_mais_utilizado || 'Nenhum'}</p>
+        <div className="stat-card">
+          <h4>📱 App Mais Usado</h4>
+          <p className="stat-value app">{dados?.app_mais_utilizado || 'Nenhum'}</p>
         </div>
-        <div style={{ padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', textAlign: 'center' }}>
-          <h4 style={{ margin: '0 0 10px 0', color: '#666' }}>📅 Dias Registrados</h4>
-          <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#6f42c1', margin: 0 }}>{dados?.total_dias_registrados}</p>
+        <div className="stat-card">
+          <h4>📅 Dias Registrados</h4>
+          <p className="stat-value dias">{dados?.total_dias_registrados}</p>
         </div>
-      </div>
+      </section>
 
       <FormRegister aoAdicionar={buscarDadosDashboard} />
 
       {/* Histórico */}
-      <div style={{ marginTop: '40px', backgroundColor: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-        <h3 style={{ marginTop: 0, color: '#333' }}>📅 Histórico de Registros</h3>
+      <section className="history-section">
+        <h3>📅 Histórico de Registros</h3>
 
         {dados?.historico && dados.historico.length > 0 ? (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px', fontSize: '15px' }}>
+          <div className="table-wrapper">
+            <table className="history-table">
               <thead>
-                <tr style={{ backgroundColor: '#f4f4f4', borderBottom: '2px solid #ccc' }}>
-                  <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Data</th>
-                  <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Tempo Total Diário</th>
-                  <th style={{ padding: '12px', textAlign: 'left', color: '#555' }}>Detalhes dos Apps</th>
+                <tr>
+                  <th>Data</th>
+                  <th>Tempo Total Diário</th>
+                  <th>Detalhes dos Apps</th>
                 </tr>
               </thead>
               <tbody>
@@ -191,10 +187,10 @@ const Dashboard = () => {
                   const dataFormatada = new Date(registro.data_registro).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
 
                   return (
-                    <tr key={index} style={{ borderBottom: '1px solid #eee' }}>
-                      <td style={{ padding: '12px', fontWeight: 'bold' }}>{dataFormatada}</td>
-                      <td style={{ padding: '12px', color: '#007BFF', fontWeight: 'bold' }}>{registro.tempo_total_minutos} min</td>
-                      <td style={{ padding: '12px', color: '#666' }}>
+                    <tr key={index}>
+                      <td className="td-date">{dataFormatada}</td>
+                      <td className="td-total-time">{registro.tempo_total_minutos} min</td>
+                      <td>
                         {formatarDetalhesApps(registro.observacoes, registro.id)}
                       </td>
                     </tr>
@@ -204,9 +200,9 @@ const Dashboard = () => {
             </table>
           </div>
         ) : (
-          <p style={{ color: '#777' }}>Nenhum registro encontrado. Comece a adicionar seu tempo de tela acima!</p>
+          <p className="empty-history">Nenhum registro encontrado. Comece a adicionar seu tempo de tela acima!</p>
         )}
-      </div>
+      </section>
 
     </div>
   );

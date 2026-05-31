@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './../styles/perfil.css';
 
 const Perfil = () => {
   const [dados, setDados] = useState({ nome: '', email: '', foto_url: '', nova_senha: '' });
@@ -16,7 +17,7 @@ const Perfil = () => {
         const res = await axios.get('http://localhost:3000/api/perfil', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setDados({ ...res.data, nova_senha: '' }); // Mantém a senha em branco na tela
+        setDados({ ...res.data, nova_senha: '' });
       } catch (err) {
         console.error(err);
         setMensagem({ texto: 'Erro ao carregar perfil.', tipo: 'erro' });
@@ -37,12 +38,11 @@ const Perfil = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      // Atualiza o nome salvo no navegador para o Header do Dashboard continuar certo
       const usuarioStorage = JSON.parse(localStorage.getItem('@FocusBalance:usuario') || '{}');
       usuarioStorage.nome = dados.nome;
       localStorage.setItem('@FocusBalance:usuario', JSON.stringify(usuarioStorage));
 
-      setMensagem({ texto: 'Perfil atualizado com sucesso!', tipo: 'sucesso' });
+      setMensagem({ texto: 'Perfil updated com sucesso!', tipo: 'sucesso' });
     } catch (err) {
       setMensagem({ texto: 'Erro ao salvar alterações.', tipo: 'erro' });
     }
@@ -62,7 +62,7 @@ const Perfil = () => {
         
         localStorage.removeItem('@FocusBalance:token');
         localStorage.removeItem('@FocusBalance:usuario');
-        navigate('/'); // Joga pra tela inicial após deletar
+        navigate('/');
       } catch (err) {
         setMensagem({ texto: 'Erro ao excluir conta.', tipo: 'erro' });
       }
@@ -70,65 +70,93 @@ const Perfil = () => {
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: '40px auto', padding: '20px', fontFamily: 'sans-serif' }}>
+    <div className="profile-container">
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      <header className="profile-header">
         <h2>Meu Perfil ⚙️</h2>
-        <button onClick={() => navigate('/dashboard')} style={{ padding: '8px 15px', cursor: 'pointer' }}>
+        <button onClick={() => navigate('/dashboard')} className="btn-back">
           Voltar ao Dashboard
         </button>
-      </div>
+      </header>
 
       {mensagem.texto && (
-        <div style={{ padding: '10px', marginBottom: '20px', borderRadius: '4px', backgroundColor: mensagem.tipo === 'sucesso' ? '#d4edda' : '#f8d7da', color: mensagem.tipo === 'sucesso' ? '#155724' : '#721c24' }}>
+        <div className={`profile-alert ${mensagem.tipo}`}>
           {mensagem.texto}
         </div>
       )}
 
-      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+      <div className="avatar-section">
         <img 
           src={dados.foto_url || 'https://via.placeholder.com/150'} 
-          alt="Avatar" 
-          style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover', border: '3px solid #007BFF' }} 
+          alt="Avatar do Usuário" 
+          className="avatar-image"
         />
       </div>
 
-      <form onSubmit={handleSalvar} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+      <form onSubmit={handleSalvar} className="profile-form">
         
-        <label style={{ display: 'flex', flexDirection: 'column', fontWeight: 'bold' }}>
-          Nome:
-          <input type="text" name="nome" value={dados.nome || ''} onChange={handleChange} required style={{ padding: '10px', marginTop: '5px' }} />
-        </label>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <label htmlFor="nome">Nome</label>
+          <input 
+            type="text" 
+            id="nome"
+            name="nome" 
+            value={dados.nome || ''} 
+            onChange={handleChange} 
+            required 
+          />
+        </div>
 
-        <label style={{ display: 'flex', flexDirection: 'column', fontWeight: 'bold' }}>
-          E-mail:
-          <input type="email" name="email" value={dados.email || ''} onChange={handleChange} required style={{ padding: '10px', marginTop: '5px' }} />
-        </label>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <label htmlFor="email">E-mail</label>
+          <input 
+            type="email" 
+            id="email"
+            name="email" 
+            value={dados.email || ''} 
+            onChange={handleChange} 
+            required 
+          />
+        </div>
 
-        <label style={{ display: 'flex', flexDirection: 'column', fontWeight: 'bold' }}>
-          URL da Foto de Perfil (Opcional):
-          <input type="text" name="foto_url" value={dados.foto_url || ''} onChange={handleChange} placeholder="https://site.com/sua-foto.jpg" style={{ padding: '10px', marginTop: '5px' }} />
-        </label>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <label htmlFor="foto_url">URL da Foto de Perfil (Opcional)</label>
+          <input 
+            type="text" 
+            id="foto_url"
+            name="foto_url" 
+            value={dados.foto_url || ''} 
+            onChange={handleChange} 
+            placeholder="https://site.com/sua-foto.jpg" 
+          />
+        </div>
 
-        <label style={{ display: 'flex', flexDirection: 'column', fontWeight: 'bold' }}>
-          Nova Senha (deixe em branco para não alterar):
-          <input type="password" name="nova_senha" value={dados.nova_senha || ''} onChange={handleChange} placeholder="Digite a nova senha" style={{ padding: '10px', marginTop: '5px' }} />
-        </label>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <label htmlFor="nova_senha">Nova Senha (deixe em branco para não alterar)</label>
+          <input 
+            type="password" 
+            id="nova_senha"
+            name="nova_senha" 
+            value={dados.nova_senha || ''} 
+            onChange={handleChange} 
+            placeholder="Digite a nova senha" 
+          />
+        </div>
 
-        <button type="submit" style={{ padding: '12px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px', marginTop: '10px' }}>
+        <button type="submit" className="btn-save">
           Salvar Alterações
         </button>
       </form>
 
-      <hr style={{ margin: '30px 0' }} />
+      <hr className="profile-divider" />
 
-      <div style={{ backgroundColor: '#fff3f3', padding: '20px', borderRadius: '8px', border: '1px solid #ffcccc', textAlign: 'center' }}>
-        <h4 style={{ color: '#dc3545', marginTop: 0 }}>Zona de Perigo</h4>
-        <p style={{ color: '#666', fontSize: '14px' }}>Ao excluir sua conta, todos os seus dados e históricos serão apagados permanentemente.</p>
-        <button onClick={handleDeletarConta} style={{ padding: '10px 20px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+      <section className="danger-zone">
+        <h4>Zona de Perigo</h4>
+        <p>Ao excluir sua conta, todos os seus dados e históricos serão apagados permanentemente de nossos servidores.</p>
+        <button onClick={handleDeletarConta} className="btn-delete">
           Excluir Minha Conta
         </button>
-      </div>
+      </section>
 
     </div>
   );
