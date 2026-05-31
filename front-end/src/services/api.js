@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://focus-balance-api.vercel.app/api'
+  baseURL: import.meta.env.VITE_API_URL || 'https://focus-balance.vercel.app/api'
 });
 
 api.interceptors.request.use((config) => {
