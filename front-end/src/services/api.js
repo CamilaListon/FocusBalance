@@ -1,8 +1,9 @@
 import axios from 'axios';
 
-const api = axios.create({
+import axios from 'axios';
 
-  baseURL: 'https://focus-balance.vercel.app'
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'https://focus-balance.vercel.app'
 });
 
 
