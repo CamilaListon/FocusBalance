@@ -1,5 +1,4 @@
-// config/db.js
-require('dotenv').config(); // Garante que as variáveis de ambiente carreguem aqui também
+require('dotenv').config();
 const { initializeApp, getApps, getApp } = require("firebase/app");
 const { getDatabase } = require("firebase/database");
 
@@ -13,10 +12,8 @@ const firebaseConfig = {
     databaseURL: process.env.FIREBASE_DATABASE_URL
 };
 
-// Se o app já existir, usa o existente. Se não, inicializa um novo (Evita crash no Vercel)
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-// Inicializa o Realtime Database
 const db = getDatabase(app);
 
 module.exports = db;

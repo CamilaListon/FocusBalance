@@ -42,8 +42,8 @@
 .btn-profile {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 18px;
+  gap: 10px;
+  padding: 6px 16px 6px 8px;
   background-color: var(--bg-calm);
   color: var(--primary-green);
   border: 1px solid rgba(45, 106, 79, 0.2);
@@ -55,6 +55,15 @@
 
 .btn-profile:hover {
   background-color: var(--light-green);
+}
+
+.header-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--medium-green);
+  background-color: #eee;
 }
 
 .btn-logout {

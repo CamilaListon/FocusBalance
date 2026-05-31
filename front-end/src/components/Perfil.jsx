@@ -1,4 +1,3 @@
-// src/components/Perfil.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
@@ -36,6 +35,7 @@ const Perfil = () => {
       
       const usuarioStorage = JSON.parse(localStorage.getItem('@FocusBalance:usuario') || '{}');
       usuarioStorage.nome = dados.nome;
+      usuarioStorage.foto_url = dados.foto_url;
       localStorage.setItem('@FocusBalance:usuario', JSON.stringify(usuarioStorage));
 
       setMensagem({ texto: 'Perfil atualizado com sucesso!', tipo: 'sucesso' });

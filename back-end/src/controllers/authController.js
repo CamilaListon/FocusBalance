@@ -1,10 +1,8 @@
-// controllers/authController.js
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
-const { ref, set, get } = require("firebase/database"); // Removeu query, orderByChild, equalTo
+const { ref, set, get } = require("firebase/database");
 
-// Função de Cadastro
 exports.cadastro = async (req, res) => {
     try {
         const { nome, email, senha } = req.body;
@@ -14,10 +12,8 @@ exports.cadastro = async (req, res) => {
         }
 
         const emailFormatado = email.toLowerCase().trim();
-        // Substitui pontos por underline para criar uma chave válida no Firebase (ex: joao_gmail_com)
         const emailChave = emailFormatado.replace(/\./g, '_'); 
 
-        // 1. Busca direta pela chave (Muito mais rápido e não precisa de Query/Índice)
         const usuarioRef = ref(db, `usuarios/${emailChave}`);
         const snapshot = await get(usuarioRef);
 
@@ -29,7 +25,7 @@ exports.cadastro = async (req, res) => {
         const senhaHash = await bcrypt.hash(senha, salt);
 
         const novoUsuario = {
-            id: emailChave, // O próprio e-mail tratado vira o ID unico
+            id: emailChave, 
             nome: nome,
             email: emailFormatado,
             senha: senhaHash,
@@ -51,7 +47,6 @@ exports.cadastro = async (req, res) => {
     }
 };
 
-// Função de Login
 exports.login = async (req, res) => {
     try {
         const { email, senha } = req.body;
@@ -63,7 +58,6 @@ exports.login = async (req, res) => {
         const emailFormatado = email.toLowerCase().trim();
         const emailChave = emailFormatado.replace(/\./g, '_');
 
-        // 1. Busca direta instantânea pela rota da chave
         const usuarioRef = ref(db, `usuarios/${emailChave}`);
         const snapshot = await get(usuarioRef);
 
@@ -73,16 +67,14 @@ exports.login = async (req, res) => {
 
         const usuario = snapshot.val();
 
-        // 2. Compara a senha
         const senhaValida = await bcrypt.compare(senha, usuario.senha);
         if (!senhaValida) {
             return res.status(401).json({ erro: 'E-mail ou senha incorretos.' });
         }
 
-        // 3. Gera o Token JWT
         const token = jwt.sign(
             { id: usuario.id, tipo_plano: usuario.tipo_plano },
-            process.env.JWT_SECRET || 'fallback_secret_local', // Evita quebrar se esquecer o env local
+            process.env.JWT_SECRET || 'fallback_secret_local',
             { expiresIn: '7d' }
         );
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import FormRegister from './Form-register';
-import './../styles/dashboard.css'; 
+import './../styles/dashboard.css';
 
 const Dashboard = () => {
   const [dados, setDados] = useState(null);
@@ -124,6 +124,8 @@ const Dashboard = () => {
 
   const usuarioStorage = JSON.parse(localStorage.getItem('@FocusBalance:usuario') || '{}');
   const nomeExibicao = usuarioStorage.nome || dados?.usuario_nome || 'Visitante';
+  const fotoExibicao = usuarioStorage.foto_url || dados?.usuario_foto_url || 'https://via.placeholder.com/150';
+
 
   return (
     <div className="dash-container">
@@ -133,7 +135,12 @@ const Dashboard = () => {
         <h2>Olá, {nomeExibicao}! 👋</h2>
         <div className="header-actions">
           <button onClick={() => navigate('/perfil')} className="btn-profile">
-            ⚙️ Meu Perfil
+            <img
+              src={fotoExibicao}
+              alt="Minha foto de perfil"
+              className="header-avatar"
+            />
+            Meu Perfil
           </button>
           <button onClick={handleLogout} className="btn-logout">
             Sair
