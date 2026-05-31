@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import FormRegister from './Form-register';
 import './../styles/dashboard.css'; 
 
@@ -20,9 +20,7 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await axios.get('http://localhost:3000/api/dashboard', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/dashboard');
       setDados(response.data);
     } catch (err) {
       console.error(err);
@@ -49,14 +47,11 @@ const Dashboard = () => {
 
   const atualizarAppNoBanco = async (registroId, nomeApp, novoTempo, acao) => {
     try {
-      const token = localStorage.getItem('@FocusBalance:token');
-      await axios.put('http://localhost:3000/api/registros/app', {
+      await api.put('/registros/app', {
         registro_id: registroId,
         nome_app: nomeApp,
         novo_tempo: novoTempo,
         acao: acao
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
       buscarDadosDashboard();
     } catch (error) {

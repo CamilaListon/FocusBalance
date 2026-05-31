@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import './../styles/form-register.css';
+
 const FormRegister = ({ aoAdicionar }) => {
   const [formData, setFormData] = useState({
     aplicativo: '',
@@ -21,16 +22,10 @@ const FormRegister = ({ aoAdicionar }) => {
     setFeedback({ texto: '', tipo: '' });
     setLoading(true);
 
-    const token = localStorage.getItem('@FocusBalance:token');
-
     try {
-      await axios.post('http://localhost:3000/api/registros', {
+      await api.post('/registros', {
         nome_app: formData.aplicativo,
         tempo_minutos: Number(formData.tempoGasto),
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
       });
 
       setFeedback({ texto: 'Tempo registrado com sucesso! 📊', tipo: 'sucesso' });

@@ -1,6 +1,7 @@
+// src/components/Register.jsx
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import './../styles/register.css';
 
 const Register = () => {
@@ -35,7 +36,7 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/cadastro', {
+      const response = await api.post('/auth/cadastro', {
         nome: formData.nome,
         email: formData.email,
         senha: formData.senha
@@ -51,7 +52,7 @@ const Register = () => {
       if (err.response && err.response.data && err.response.data.erro) {
         setErro(err.response.data.erro);
       } else {
-        setErro('Erro no servidor. Verifique se a API está rodando.');
+        setErro('Erro no servidor ao tentar cadastrar.');
       }
     } finally {
       setLoading(false);

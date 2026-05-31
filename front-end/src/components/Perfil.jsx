@@ -1,6 +1,7 @@
+// src/components/Perfil.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import './../styles/perfil.css';
 
 const Perfil = () => {
@@ -14,9 +15,7 @@ const Perfil = () => {
         const token = localStorage.getItem('@FocusBalance:token');
         if (!token) return navigate('/login');
 
-        const res = await axios.get('http://localhost:3000/api/perfil', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await api.get('/perfil');
         setDados({ ...res.data, nova_senha: '' });
       } catch (err) {
         console.error(err);
@@ -33,16 +32,13 @@ const Perfil = () => {
   const handleSalvar = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('@FocusBalance:token');
-      await axios.put('http://localhost:3000/api/perfil', dados, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.put('/perfil', dados);
       
       const usuarioStorage = JSON.parse(localStorage.getItem('@FocusBalance:usuario') || '{}');
       usuarioStorage.nome = dados.nome;
       localStorage.setItem('@FocusBalance:usuario', JSON.stringify(usuarioStorage));
 
-      setMensagem({ texto: 'Perfil updated com sucesso!', tipo: 'sucesso' });
+      setMensagem({ texto: 'Perfil atualizado com sucesso!', tipo: 'sucesso' });
     } catch (err) {
       setMensagem({ texto: 'Erro ao salvar alterações.', tipo: 'erro' });
     }
@@ -55,10 +51,7 @@ const Perfil = () => {
 
     if (confirmacao) {
       try {
-        const token = localStorage.getItem('@FocusBalance:token');
-        await axios.delete('http://localhost:3000/api/perfil', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.delete('/perfil');
         
         localStorage.removeItem('@FocusBalance:token');
         localStorage.removeItem('@FocusBalance:usuario');
