@@ -1,8 +1,8 @@
-// config/db.js
+// src/firebase.js
+require('dotenv').config();
 const { initializeApp } = require("firebase/app");
 const { getDatabase } = require("firebase/database");
 
-// Configurações do Firebase vindas do seu arquivo .env
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
   authDomain: process.env.FIREBASE_AUTH_DOMAIN,
@@ -10,14 +10,13 @@ const firebaseConfig = {
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.FIREBASE_APP_ID,
-  databaseURL: process.env.FIREBASE_DATABASE_URL // Lembre-se de adicionar essa URL no seu .env!
+  databaseURL: process.env.FIREBASE_DATABASE_URL // Linha obrigatória para Realtime Database!
 };
 
-// Inicializa o aplicativo Firebase
+// Inicializa o Firebase
 const app = initializeApp(firebaseConfig);
 
 // Inicializa o Realtime Database
 const db = getDatabase(app);
 
-// Exporta a instância do banco de dados para ser usada nos controllers
 module.exports = db;

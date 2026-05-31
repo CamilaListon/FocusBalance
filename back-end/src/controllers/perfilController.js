@@ -1,15 +1,29 @@
-const db = require('../config/db');
-const bcrypt = require('bcrypt');
+// controllers/perfilController.js
+const db = require('../config/db'); // Conexão com o Firebase
+const { ref, get, update, remove } = require("firebase/database");
+const bcrypt = require('bcryptjs'); // Mantendo o padrão do bcryptjs do seu pacote
 
 // 1. Buscar os dados atuais do usuário
 exports.obterPerfil = async (req, res) => {
     try {
         const usuario_id = req.usuario.id;
-        const [rows] = await db.execute('SELECT nome, email, foto_url FROM usuarios WHERE id = ?', [usuario_id]);
+
+        // Aponta direto para o nó do usuário específico
+        const usuarioRef = ref(db, `usuarios/${usuario_id}`);
+        const snapshot = await get(usuarioRef);
         
-        if (rows.length === 0) return res.status(404).json({ erro: 'Usuário não encontrado.' });
+        if (!snapshot.exists()) {
+            return res.status(404).json({ erro: 'Usuário não encontrado.' });
+        }
+
+        const usuario = snapshot.val();
         
-        res.status(200).json(rows[0]);
+        // Retorna apenas o que o front-end precisa (escondendo a senha)
+        res.status(200).json({
+            nome: usuario.nome,
+            email: usuario.email,
+            foto_url: usuario.foto_url || ''
+        });
     } catch (erro) {
         console.error('Erro ao buscar perfil:', erro);
         res.status(500).json({ erro: 'Erro interno do servidor.' });
@@ -22,20 +36,26 @@ exports.atualizarPerfil = async (req, res) => {
         const usuario_id = req.usuario.id;
         const { nome, email, foto_url, nova_senha } = req.body;
 
-        // Atualiza os dados básicos
-        await db.execute(
-            'UPDATE usuarios SET nome = ?, email = ?, foto_url = ? WHERE id = ?',
-            [nome, email, foto_url || '', usuario_id]
-        );
+        const usuarioRef = ref(db, `usuarios/${usuario_id}`);
+        
+        // Monta o objeto de atualização com os dados básicos
+        let dadosAtualizados = {
+            nome: nome,
+            email: email.toLowerCase().trim(),
+            foto_url: foto_url || ''
+        };
 
-        // Se o usuário digitou uma nova senha, atualizamos ela também
+        // Se o usuário digitou uma nova senha, gera o hash e anexa ao objeto
         if (nova_senha && nova_senha.trim() !== '') {
             const salt = await bcrypt.genSalt(10);
             const senhaHash = await bcrypt.hash(nova_senha, salt);
-            await db.execute('UPDATE usuarios SET senha = ? WHERE id = ?', [senhaHash, usuario_id]);
+            dadosAtualizados.senha = senhaHash;
         }
 
-        res.status(200).json({ mensagem: 'Perfil atualizado com sucesso!' });
+        // O método update altera apenas os campos enviados sem apagar o resto do nó
+        await update(usuarioRef, dadosAtualizados);
+
+        res.status(200).json({ mensagem: 'Perfil updated com sucesso!' });
     } catch (erro) {
         console.error('Erro ao atualizar perfil:', erro);
         res.status(500).json({ erro: 'Erro interno ao atualizar perfil.' });
@@ -47,11 +67,13 @@ exports.deletarConta = async (req, res) => {
     try {
         const usuario_id = req.usuario.id;
 
-        // Primeiro deletamos o histórico para não dar erro de chave estrangeira
-        await db.execute('DELETE FROM registros WHERE usuario_id = ?', [usuario_id]);
+        // 1. Deleta o histórico de registros do usuário
+        const registrosRef = ref(db, `registros/${usuario_id}`);
+        await remove(registrosRef);
         
-        // Depois deletamos o usuário
-        await db.execute('DELETE FROM usuarios WHERE id = ?', [usuario_id]);
+        // 2. Deleta as informações cadastrais do usuário
+        const usuarioRef = ref(db, `usuarios/${usuario_id}`);
+        await remove(usuarioRef);
 
         res.status(200).json({ mensagem: 'Conta e dados excluídos para sempre.' });
     } catch (erro) {
