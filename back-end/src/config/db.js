@@ -1,23 +1,22 @@
 // config/db.js
-const { initializeApp } = require("firebase/app");
+require('dotenv').config(); // Garante que as variáveis de ambiente carreguem aqui também
+const { initializeApp, getApps, getApp } = require("firebase/app");
 const { getDatabase } = require("firebase/database");
 
-// Configurações do Firebase vindas do seu arquivo .env
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
-  databaseURL: process.env.FIREBASE_DATABASE_URL // Lembre-se de adicionar essa URL no seu .env!
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.FIREBASE_APP_ID,
+    databaseURL: process.env.FIREBASE_DATABASE_URL
 };
 
-// Inicializa o aplicativo Firebase
-const app = initializeApp(firebaseConfig);
+// Se o app já existir, usa o existente. Se não, inicializa um novo (Evita crash no Vercel)
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 // Inicializa o Realtime Database
 const db = getDatabase(app);
 
-// Exporta a instância do banco de dados para ser usada nos controllers
 module.exports = db;
