@@ -10,18 +10,21 @@ const dashboardRoutes = require('./routes/dashboardRoutes'); // Faremos em segui
 
 const app = express();
 
+// 1. Configuração padrão do CORS
 app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
-app.options('*', cors());
+
+// 2. CORREÇÃO AQUI: Interceptor global para OPTIONS e Headers sem usar o '*' que quebra
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     
+    // Se for uma requisição de preflight (OPTIONS), responde 200 imediatamente
     if (req.method === "OPTIONS") {
         return res.sendStatus(200);
     }
