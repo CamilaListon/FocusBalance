@@ -34,3 +34,6 @@ Desenvolvido por:
 ✨ [Erik Kavulack](https://github.com/erikkavulack)  <br>
 ✨ [Giulia Souza da Fonseca](https://github.com/GiuliaSouzaDaF)  <br>
 ✨ [Maria Lucia Neves da Silva](https://github.com/MARIALUCIA2024)  <br>
+
+Acesse nosso site online <br>
+https://focusbalance.vercel.app
