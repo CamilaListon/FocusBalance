@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import FormRegister from './Form-register';
+import { useTheme } from './theme'; // 👈 Importa o hook do tema (ajuste o caminho se necessário)
 import './../styles/dashboard.css';
 
 const Dashboard = () => {
@@ -10,6 +11,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme(); // 👈 Consome o tema atual e a função de alternar
 
   const buscarDadosDashboard = async () => {
     const token = localStorage.getItem('@FocusBalance:token');
@@ -126,14 +128,22 @@ const Dashboard = () => {
   const nomeExibicao = usuarioStorage.nome || dados?.usuario_nome || 'Visitante';
   const fotoExibicao = usuarioStorage.foto_url || dados?.usuario_foto_url || 'https://via.placeholder.com/150';
 
-
   return (
     <div className="dash-container">
 
-      {/* Cabeçalho */}
+
       <header className="dash-header">
         <h2>Olá, {nomeExibicao}! 👋</h2>
         <div className="header-actions">
+
+          <button 
+            onClick={toggleTheme} 
+            className="btn-theme-toggle" 
+            title={theme === 'light' ? 'Ativar Modo Escuro' : 'Ativar Modo Claro'}
+          >
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
+
           <button onClick={() => navigate('/perfil')} className="btn-profile">
             <img
               src={fotoExibicao}
@@ -148,7 +158,6 @@ const Dashboard = () => {
         </div>
       </header>
 
-      {/* Cartões de Estatísticas */}
       <section className="cards-grid">
         <div className="stat-card">
           <h4>🔥 Streak Atual</h4>
@@ -170,7 +179,6 @@ const Dashboard = () => {
 
       <FormRegister aoAdicionar={buscarDadosDashboard} />
 
-      {/* Histórico */}
       <section className="history-section">
         <h3>📅 Histórico de Registros</h3>
 
