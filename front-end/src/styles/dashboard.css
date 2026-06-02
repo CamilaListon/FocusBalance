@@ -92,6 +92,7 @@
 .stat-card {
   padding: 24px 20px;
   background-color: var(--white);
+  background-image: url('../../public/fundo-dash.png');
   border-radius: 12px;
   border: 1px solid var(--border-color);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
@@ -165,6 +166,7 @@
 .history-section {
   margin-top: 40px;
   background-color: var(--white);
+  background-image: url('../../public/fundo-dash.png');
   padding: 30px;
   border-radius: 16px;
   border: 1px solid var(--border-color);

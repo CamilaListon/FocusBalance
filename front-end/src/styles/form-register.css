@@ -4,6 +4,7 @@
   border-radius: 16px;
   border: 1px solid rgba(45, 106, 79, 0.1);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  background-image: url('../../public/fundo-dash.png');
 }
 
 .form-register-card h3 {
