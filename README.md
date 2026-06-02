@@ -29,7 +29,7 @@ O ecossistema do projeto foi construído utilizando as seguintes tecnologias no 
 
 ---
 
-Desenvolvido por:
+Desenvolvido por:  <br>
 ✨ [Camila Liston](https://github.com/CAMILALISTON)  <br>
 ✨ [Erik Kavulack](https://github.com/erikkavulack)  <br>
 ✨ [Giulia Souza da Fonseca](https://github.com/GiuliaSouzaDaF)  <br>
